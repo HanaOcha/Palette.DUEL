@@ -45,6 +45,7 @@ namespace palette.duel
             this.paletteFrameBackTen.Click += this.paletteEditor.FrameBackT;
             this.paletteFrameForwardTen.Click += this.paletteEditor.FrameForwardT;
             this.palettePreview.DropDownClosed += this.paletteEditor.UpdateDictionary;
+            this.findNextFrame.Click += this.paletteEditor.NextFrameWithFocus;
 
             for (int i = 0; i < 25; i++)
             {
@@ -530,6 +531,53 @@ namespace palette.duel
             }
 
             UpdateDictionary(null, null);
+        }
+        public void NextFrameWithFocus(object? sender, EventArgs? e)
+        {
+            if (selectedPaletteBtn != null)
+            {
+                Color key = selectedPaletteBtn.key;
+                List<Vector2> frames = new List<Vector2>();
+                List<Vector2> after = new List<Vector2>();
+
+                foreach (Pixpoint point in this.pixpoints) 
+                {
+                    if (point.color == key)
+                    {
+                        int frameX = (int)Math.Floor((float)point.x / outfit.spriteData.size.X);
+                        int frameY = (int)Math.Floor((float)point.y / outfit.spriteData.size.Y);
+                        Vector2 f = new Vector2(frameX, frameY);
+                        frames.Add(f);
+
+                        if (f.Y > frame.Y || (f.Y == frame.Y && f.X > frame.X))
+                        {
+                            after.Add(f);
+                        }
+                    }
+                }
+
+                after.Sort((x, y) => (x.X == y.X && x.Y == y.Y) ? 0 :
+                    (x.Y < y.Y || (x.Y == y.Y && x.X < y.X)) ? -1 : 1
+                );
+                frames.Sort((x, y) => (x.X == y.X && x.Y == y.Y) ? 0 :
+                    (x.Y < y.Y || (x.Y == y.Y && x.X < y.X)) ? -1 : 1
+                );
+
+                if (after.Count > 0)
+                {
+                    Vector2 f = after[0];
+                    this.frame = f;
+                    this.UpdatePalette((int)f.X, (int)f.Y);
+                    return;
+                }
+
+                if (frames.Count > 0)
+                {
+                    Vector2 f = frames[0];
+                    this.frame = f;
+                    this.UpdatePalette((int)f.X, (int)f.Y);
+                }
+            }
         }
     }
 
