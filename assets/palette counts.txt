@@ -1,0 +1,4 @@
+Saffron_Default:11,11,140,160;0,0
+Saffron_Witch:9,9,140,130;0,0
+Perilla_Default:11,11,140,160;5,1
+Shopkeeper_Default:9,9,100,120;0,0
