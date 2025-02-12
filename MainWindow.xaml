@@ -72,6 +72,8 @@
 
         <Canvas x:Name="paletteEditCanvas" IsEnabled="True" Visibility="Visible" Background="Black">
 
+            <Rectangle Height="244" Width="516" Canvas.Left="30" Canvas.Top="90" HorizontalAlignment="Left" VerticalAlignment="Center" Fill="#59FFFFFF"></Rectangle>
+
             <Image x:Name="chrPaletteDisplay" Source="/assets/sheets/Saffron_Default.png"
                     RenderOptions.BitmapScalingMode="NearestNeighbor"
                     Canvas.Left="0" HorizontalAlignment="Right" VerticalAlignment="Top" 
@@ -108,7 +110,7 @@
                 FontSize="12" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
                 BorderBrush="White" BorderThickness="2,2,2,2" />
 
-            <local:DuelistButton x:Name="findNextFrame" Style="{DynamicResource NoBGChange}"  Content="Next Frame" Canvas.Left="16" Canvas.Top="51" 
+            <local:DuelistButton x:Name="findNextFrame" Style="{DynamicResource NoBGChange}"  Content="Find Next" Canvas.Left="16" Canvas.Top="51" 
                 Height="20" Width="92" HorizontalAlignment="Left" VerticalAlignment="Center"
                 FontSize="12" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
                 BorderBrush="White" BorderThickness="2,2,2,2" />
@@ -140,6 +142,15 @@
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
             </Grid>
+
+            <local:DuelistButton x:Name="importPalette" Style="{DynamicResource NoBGChange}"  Content="IMPORT" Canvas.Left="16" Canvas.Top="455" 
+                Height="35" Width="115" HorizontalAlignment="Center" VerticalAlignment="Top"
+                FontSize="16" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
+                BorderBrush="White" BorderThickness="3,3,3,3" />
+            <local:DuelistButton x:Name="exportPalette" Style="{DynamicResource NoBGChange}"  Content="EXPORT" Canvas.Left="141" Canvas.Top="455" 
+                Height="35" Width="115" HorizontalAlignment="Center" VerticalAlignment="Top"
+                FontSize="16" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
+                BorderBrush="White" BorderThickness="3,3,3,3" />
         </Canvas>
 
     </Canvas>

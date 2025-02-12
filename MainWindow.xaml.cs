@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Microsoft.Win32;
+using System.IO;
 using System.Numerics;
 using System.Text;
 using System.Windows;
@@ -11,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace palette.duel
 {
@@ -46,6 +48,8 @@ namespace palette.duel
             this.paletteFrameForwardTen.Click += this.paletteEditor.FrameForwardT;
             this.palettePreview.DropDownClosed += this.paletteEditor.UpdateDictionary;
             this.findNextFrame.Click += this.paletteEditor.NextFrameWithFocus;
+            this.importPalette.Click += this.paletteEditor.Import;
+            this.exportPalette.Click += this.paletteEditor.Export;
 
             for (int i = 0; i < 25; i++)
             {
@@ -233,7 +237,15 @@ namespace palette.duel
             this.data = data;
 
             this.RenderSize = new Size(this.wSize, (int)(this.wSize * 332f / 512f));
-            this.Background = new ImageBrush() { ImageSource = new BitmapImage(new Uri(data.splash)) };
+            using (FileStream stream = File.OpenRead(data.splash))
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = stream; bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+
+                this.Background = new ImageBrush() { ImageSource = bitmap };
+            }
 
             this.TabIndex = menu.chrButtons.Count;
         }
@@ -259,6 +271,8 @@ namespace palette.duel
 
         public BitmapSource? baseBit;
         public WriteableBitmap? editBit;
+        public BitmapPalette? basePaletteKeys;
+        public BitmapPalette? defaultPaletteKeys;
 
         public List<PaletteButton> paletteButtons = new List<PaletteButton>();
         public PaletteButton? selectedPaletteBtn = null;
@@ -280,6 +294,8 @@ namespace palette.duel
         public List<Pixpoint> pixpoints = new List<Pixpoint>();
         public Dictionary<Color, Color> paletteMatch = new Dictionary<Color, Color>();
 
+        public byte[] exportPixels = new byte[256];
+
         public PaletteEditor(MainWindow window)
         {
             this.window = window;
@@ -300,6 +316,9 @@ namespace palette.duel
         }
         public void Reset()
         {
+            this.paletteButtons.Clear();
+            this.pixpoints.Clear();
+            this.paletteMatch.Clear();
             this.SetupPixels();
             this.window.chrPaletteDisplay.Source = this.editBit;
 
@@ -309,13 +328,19 @@ namespace palette.duel
         }
         public void SetupPixels()
         {
-            this.baseBit = new FormatConvertedBitmap(
-                    new BitmapImage(new Uri(outfit.sheet)), PixelFormats.Bgra32, null, 0
-                );
+            using (FileStream stream = File.OpenRead(outfit.sheet))
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = stream;
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                this.baseBit = new FormatConvertedBitmap(bitmap, PixelFormats.Bgra32, null, 0);
+            }
             this.editBit = new WriteableBitmap(this.baseBit);
 
             this.stride = (this.baseBit.PixelWidth * this.baseBit.Format.BitsPerPixel + 7) / 8;
-            allPixels = new byte[this.stride * this.baseBit.PixelHeight];
+            this.allPixels = new byte[this.stride * this.baseBit.PixelHeight];
             this.baseBit.CopyPixels(allPixels, this.stride, 0);
 
             for (int x = 0; x < this.baseBit.Width; x++)
@@ -336,8 +361,24 @@ namespace palette.duel
                 }
             }
 
-            BitmapPalette basePalette = new BitmapPalette(new BitmapImage(new Uri(outfit.palette)), 100);
-            foreach (Color c in basePalette.Colors)
+            using (FileStream stream = File.OpenRead(outfit.palette))
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = stream; bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                this.basePaletteKeys = new BitmapPalette(bitmap, 100);
+            }
+            using (FileStream stream = File.OpenRead(outfit.normal))
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = stream; bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                this.defaultPaletteKeys = new BitmapPalette(bitmap, 100);
+            }
+
+            foreach (Color c in this.basePaletteKeys.Colors)
             {
                 if (!(c.R == 205 && c.G == 205 && c.B == 205))
                 {
@@ -345,6 +386,9 @@ namespace palette.duel
                     this.CreatePaletteButton(c);
                 }
             }
+
+            int exportStride = (100 * this.editBit.Format.BitsPerPixel + 7) / 8;
+            this.exportPixels = new byte[exportStride * 1];
         }
         public PaletteButton CreatePaletteButton(Color key)
         {
@@ -373,19 +417,17 @@ namespace palette.duel
                         Color colorValue = button.value;
                         if (this.selectedPaletteBtn != null && this.selectedPaletteBtn != button)
                         {
-                            colorValue.A = 64;
+                            colorValue.A = 48;
                         }
 
                         this.paletteMatch[button.key] = colorValue;
                     }
                     break;
                 case "Default":
-                    BitmapPalette bp = new BitmapPalette(new BitmapImage(new Uri(outfit.palette)), 100);
-                    BitmapPalette dp = new BitmapPalette(new BitmapImage(new Uri(outfit.normal)), 100);
-                    for (int i = 0; i < bp.Colors.Count; i++)
+                    for (int i = 0; i < this.basePaletteKeys.Colors.Count; i++)
                     {
-                        Color bColor = bp.Colors[i];
-                        Color dColor = dp.Colors[i];
+                        Color bColor = this.basePaletteKeys.Colors[i];
+                        Color dColor = this.defaultPaletteKeys.Colors[i];
 
                         if (this.paletteMatch.ContainsKey(bColor))
                         {
@@ -579,6 +621,88 @@ namespace palette.duel
                 }
             }
         }
+
+        public void Import(object? sender, EventArgs? e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = Data.PATH.I;
+            dialog.Filter = ".PNG Format (*.png)|*.png";
+            dialog.Title = "Select a palette file to import.";
+            dialog.RestoreDirectory = true;
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                using (FileStream stream = File.OpenRead(dialog.FileName))
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = stream; bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    BitmapPalette filePalette = new BitmapPalette(bitmap, 100);
+
+                    for (int i = 0; i < paletteButtons.Count && i < filePalette.Colors.Count; i++)
+                    {
+                        Color c = filePalette.Colors[i];
+                        if (!(c.R == 205 && c.G == 205 && c.B == 205))
+                        {
+                            paletteButtons[i].Set(c);
+                        }
+                    }
+                }
+
+                UpdateDictionary(sender, e);
+            }
+        }
+        public void Export(object? sender, EventArgs? e)
+        {
+            List<Color> colors = new List<Color>(this.paletteMatch.Values);
+            colors.Add(Color.FromArgb(0, 0, 0, 0));
+            BitmapPalette palette = new BitmapPalette(colors);
+            WriteableBitmap bitmap = new WriteableBitmap(
+                100, 1, this.editBit.DpiX, this.editBit.DpiY, PixelFormats.Bgra32, palette
+                );
+            // BGRA
+
+            for (int i = 0; i < this.basePaletteKeys.Colors.Count; i++)
+            {
+                Color key = this.basePaletteKeys.Colors[i];
+                int j = i * 4;
+
+                if (this.paletteMatch.ContainsKey(key) && this.exportPixels.Length > j)
+                {
+                    Color c = this.paletteMatch[key];
+                    
+                    this.exportPixels[j] = c.B;
+                    this.exportPixels[j + 1] = c.G;
+                    this.exportPixels[j + 2] = c.R;
+                    this.exportPixels[j + 3] = c.A;
+                }
+            }
+
+            int exportStride = (100 * this.editBit.Format.BitsPerPixel + 7) / 8;
+            bitmap.WritePixels(new Int32Rect(0, 0, 100, 1), this.exportPixels, exportStride, 0);
+            
+            SaveFileDialog save = new SaveFileDialog();
+            save.InitialDirectory = Data.PATH.I;
+            save.Filter = ".PNG Format (*.png)|*.png";
+            save.Title = "Save the current palette.";
+            save.RestoreDirectory = true;
+            save.AddToRecent = true;
+            save.AddExtension = true;
+            save.FileName = character.name + "_" + outfit.name + ".png";
+
+            if (save.ShowDialog() == true)
+            {
+                using (FileStream stream = new FileStream(save.FileName, FileMode.OpenOrCreate))
+                {
+                    PngBitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(bitmap));
+                    encoder.Save(stream);
+                }
+            }
+        }
     }
 
     public class PaletteButton : Button
@@ -613,6 +737,11 @@ namespace palette.duel
                 return;
             }
             this.menu.SetPaletteFocus(this);
+        }
+        public void Set(Color color)
+        {
+            this.value = color;
+            this.Background = new SolidColorBrush(color);
         }
     }
 }
