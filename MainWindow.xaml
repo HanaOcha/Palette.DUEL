@@ -129,6 +129,17 @@
                 <ComboBoxItem IsSelected="True">Preview</ComboBoxItem>
                 <ComboBoxItem>Default</ComboBoxItem>
             </ComboBox>
+
+            <Grid x:Name="paletteGrid" Height="80" Width="675" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="30" Canvas.Top="340" RenderTransformOrigin="0,0">
+                <Grid.ColumnDefinitions>
+
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+            </Grid>
         </Canvas>
 
     </Canvas>

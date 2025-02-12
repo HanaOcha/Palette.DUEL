@@ -46,7 +46,14 @@ namespace palette.duel
             this.paletteFrameForwardTen.Click += this.paletteEditor.FrameForwardT;
             this.palettePreview.DropDownClosed += this.paletteEditor.UpdateDictionary;
 
-            this.watch = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, (int)(1000f / 14f)), DispatcherPriority.Background,
+            for (int i = 0; i < 25; i++)
+            {
+                this.paletteGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+
+            this.watch = new DispatcherTimer(
+                new TimeSpan(0, 0, 0, 0, (int)(1000f / 14f)), 
+                DispatcherPriority.Background,
                 this.paletteEditor.Animate, Dispatcher.CurrentDispatcher);
             this.watch.IsEnabled = false;
 
@@ -252,6 +259,9 @@ namespace palette.duel
         public BitmapSource? baseBit;
         public WriteableBitmap? editBit;
 
+        public List<PaletteButton> paletteButtons = new List<PaletteButton>();
+        public PaletteButton? selectedPaletteBtn = null;
+
         public class Pixpoint
         {
             public int x, y;
@@ -292,8 +302,9 @@ namespace palette.duel
             this.SetupPixels();
             this.window.chrPaletteDisplay.Source = this.editBit;
 
-            frame = new Vector2();
-            UpdatePalette((int)frame.X, (int)frame.Y);
+            this.frame = new Vector2();
+            this.UpdatePalette((int)frame.X, (int)frame.Y);
+            this.SetPaletteFocus(null);
         }
         public void SetupPixels()
         {
@@ -323,25 +334,49 @@ namespace palette.duel
                     }
                 }
             }
-            Console.WriteLine(this.pixpoints.Count);
 
             BitmapPalette basePalette = new BitmapPalette(new BitmapImage(new Uri(outfit.palette)), 100);
             foreach (Color c in basePalette.Colors)
             {
                 if (!(c.R == 205 && c.G == 205 && c.B == 205))
                 {
-                    paletteMatch.Add(c, c);
+                    this.paletteMatch.Add(c, c);
+                    this.CreatePaletteButton(c);
                 }
             }
+        }
+        public PaletteButton CreatePaletteButton(Color key)
+        {
+            PaletteButton button = new PaletteButton(this.window, this, key);
+
+            int x = paletteButtons.Count % 25;
+            int y = (int)Math.Floor(paletteButtons.Count / 25f);
+
+            this.window.paletteGrid.Children.Add(button);
+            Grid.SetRow(button, y);
+            Grid.SetColumn(button, x);
+            this.paletteButtons.Add(button);
+
+            return button;
         }
 
         public void UpdateDictionary(object? sender, EventArgs? e)
         {
             string value = this.window.palettePreview.Text;
-            Console.WriteLine(value);
+
             switch (value)
             {
                 case "Preview":
+                    foreach (PaletteButton button in this.paletteButtons)
+                    {
+                        Color colorValue = button.value;
+                        if (this.selectedPaletteBtn != null && this.selectedPaletteBtn != button)
+                        {
+                            colorValue.A = 64;
+                        }
+
+                        this.paletteMatch[button.key] = colorValue;
+                    }
                     break;
                 case "Default":
                     BitmapPalette bp = new BitmapPalette(new BitmapImage(new Uri(outfit.palette)), 100);
@@ -478,6 +513,58 @@ namespace palette.duel
             {
                 FrameBack(sender, e);
             }
+        }
+
+        public void SetPaletteFocus(PaletteButton? button)
+        {
+            foreach (PaletteButton _button in this.paletteButtons)
+            {
+                _button.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            }
+
+            selectedPaletteBtn = null;
+            if (button != null)
+            {
+                button.BorderBrush = new SolidColorBrush(Color.FromRgb(238, 50, 98));
+                selectedPaletteBtn = button;
+            }
+
+            UpdateDictionary(null, null);
+        }
+    }
+
+    public class PaletteButton : Button
+    {
+        public PaletteEditor menu;
+        public Color key;
+        public Color value;
+
+        public int size = 24;
+        public PaletteButton(MainWindow window, PaletteEditor menu, Color key)
+        {
+            this.menu = menu;
+            this.key = key;
+            this.value = key;
+            this.Style = (Style)this.menu.window.Resources["NoBGChange"];
+
+            this.RenderSize = new Size(this.size, this.size);
+            this.Width = this.size; this.Height = this.size;
+            this.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            this.Background = new SolidColorBrush(value);
+
+            this.TabIndex = menu.paletteButtons.Count;
+            this.BorderThickness = new Thickness(2);
+
+            this.Click += this.PaletteFocus;
+        }
+        public void PaletteFocus(object? sender, EventArgs e)
+        {
+            if (menu.selectedPaletteBtn == this)
+            {
+                this.menu.SetPaletteFocus(null);
+                return;
+            }
+            this.menu.SetPaletteFocus(this);
         }
     }
 }
