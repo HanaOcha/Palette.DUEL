@@ -1,5 +1,5 @@
 # Palette.DUEL
-A Palette creator for [Duelists of Eden](https://store.steampowered.com/app/1664200/Duelists_of_Eden/) by [Thomas Moon Kang](https://thomasmoonkang.com/)
+A Palette creator for [Duelists of Eden](https://store.steampowered.com/app/1664200/Duelists_of_Eden/), a game by [Thomas Moon Kang](https://thomasmoonkang.com/)
 ![Screenshot 2025-02-13 024848](https://github.com/user-attachments/assets/3f21504f-ac39-4095-8f65-95788c9c02c6)
 
 ## Features
