@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xaml.Behaviors.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -145,6 +147,84 @@ namespace palette.duel
         public int area()
         {
             return this.width() * this.height();
+        }
+    }
+
+    internal class Shortcuts
+    {
+        public static void ReadKey(MainWindow window, Key key, ModifierKeys modifier)
+        {
+            if (window == null || window.paletteEditor == null || window.charSelect == null)
+            {
+                return;
+            }
+
+            if (window.characterSelectCanvas.Visibility == Visibility.Visible)
+            {
+
+            }
+            else if (window.paletteEditCanvas.Visibility == Visibility.Visible)
+            {
+                if (key == Key.S && modifier == ModifierKeys.Control)
+                {
+                    window.paletteEditor.Export(null, null);
+                    return;
+                }
+
+                if (key == Key.Left && modifier == ModifierKeys.Control)
+                {
+                    window.paletteEditor.FrameBackT(null, null);
+                    return;
+                }
+                if (key == Key.Right && modifier == ModifierKeys.Control)
+                {
+                    window.paletteEditor.FrameForwardT(null, null);
+                    return;
+                }
+
+                if (key == Key.F && modifier == ModifierKeys.Control)
+                {
+                    window.paletteEditor.NextFrameWithFocus(null, null);
+                }
+                
+                //
+
+                if (key == Key.A && window.paletteAnimate.IsChecked != null)
+                {
+                    window.paletteAnimate.IsChecked = !window.paletteAnimate.IsChecked;
+                    return;
+                }
+
+                if (key == Key.D1)
+                {
+                    window.palettePreview.SelectedIndex = 0;
+                    window.paletteEditor.UpdateDictionary(null, null);
+                    return;
+                }
+                if (key == Key.D2)
+                {
+                    window.palettePreview.SelectedIndex = 1;
+                    window.paletteEditor.UpdateDictionary(null, null);
+                    return;
+                }
+                if (key == Key.D3)
+                {
+                    window.palettePreview.SelectedIndex = 2;
+                    window.paletteEditor.UpdateDictionary(null, null);
+                    return;
+                }
+
+                if (key == Key.Left)
+                {
+                    window.paletteEditor.FrameBack(null, null);
+                    return;
+                }
+                if (key == Key.Right)
+                {
+                    window.paletteEditor.FrameForward(null, null);
+                    return;
+                }
+            }
         }
     }
 }

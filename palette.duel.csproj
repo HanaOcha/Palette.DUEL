@@ -24,4 +24,8 @@
     <PackageReference Include="PixiEditor.ColorPicker" Version="3.4.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="reset.png" />
+  </ItemGroup>
+
 </Project>

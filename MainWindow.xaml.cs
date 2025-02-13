@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -55,6 +56,7 @@ namespace palette.duel
             this.paletteColorSlider.ColorChanged += this.paletteEditor.ColorWithSlider;
             this.paletteColorHex.ColorChanged += this.paletteEditor.ColorWithHex;
             this.focusOpacity.ValueChanged += this.paletteEditor.UpdateDictionary;
+            this.resetPaletteEditor.Click += this.paletteEditor.Reset;
 
             for (int i = 0; i < 25; i++)
             {
@@ -70,6 +72,10 @@ namespace palette.duel
             this.watch.IsEnabled = false;
 
             this.paletteEditor.Hide();
+        }
+        private void ReadShortcuts(object sender, KeyEventArgs e)
+        {
+            Shortcuts.ReadKey(this, e.Key, Keyboard.Modifiers);
         }
     }
     public class DuelistButton : Button
@@ -323,7 +329,7 @@ namespace palette.duel
             this.window.paletteEditCanvas.IsEnabled = true;
             this.window.watch.IsEnabled = true;
         }
-        public void Reset()
+        public void Reset(object? s = null, EventArgs? e = null)
         {
             this.paletteButtons.Clear();
             this.pixpoints.Clear();
