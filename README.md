@@ -1,1 +1,1 @@
-# palette.duel
+# Palette.DUEL

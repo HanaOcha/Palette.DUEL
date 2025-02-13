@@ -27,10 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="reset.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="assets\icons\Primer.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
