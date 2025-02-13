@@ -219,7 +219,7 @@
                 Canvas.Top="16" HorizontalAlignment="Left" VerticalAlignment="Top" 
                                  BorderBrush="#00000000" Style="{DynamicResource NoBGChange}">
                 <Button.Background>
-                    <ImageBrush ImageSource="/reset.png"/>
+                    <ImageBrush ImageSource="assets/icons/reset.png"/>
                 </Button.Background>
             </Button>
         </Canvas>
