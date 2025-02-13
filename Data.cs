@@ -171,12 +171,12 @@ namespace palette.duel
                     return;
                 }
 
-                if (key == Key.Left && modifier == ModifierKeys.Control)
+                if (key == Key.OemComma && modifier == ModifierKeys.Control)
                 {
                     window.paletteEditor.FrameBackT(null, null);
                     return;
                 }
-                if (key == Key.Right && modifier == ModifierKeys.Control)
+                if (key == Key.OemPeriod && modifier == ModifierKeys.Control)
                 {
                     window.paletteEditor.FrameForwardT(null, null);
                     return;
@@ -214,12 +214,12 @@ namespace palette.duel
                     return;
                 }
 
-                if (key == Key.Left)
+                if (key == Key.OemComma)
                 {
                     window.paletteEditor.FrameBack(null, null);
                     return;
                 }
-                if (key == Key.Right)
+                if (key == Key.OemPeriod)
                 {
                     window.paletteEditor.FrameForward(null, null);
                     return;
