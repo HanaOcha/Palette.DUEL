@@ -68,7 +68,7 @@ namespace palette.duel
 
                 foreach (FileInfo file in outfits.GetFiles())
                 {
-                    if (file.Name.StartsWith(character.name))
+                    if (file.Name.StartsWith(character.name + "_"))
                     {
                         Outfit outfit = new Outfit();
 
@@ -82,6 +82,7 @@ namespace palette.duel
                     }
                 }
 
+                character.outfits.Sort((x, y) => x.name == "Default" ? -1 : y.name == "Default" ? 1 : x.name.CompareTo(y.name));
                 characters.Add(character);
             }
         }
@@ -161,7 +162,16 @@ namespace palette.duel
 
             if (window.characterSelectCanvas.Visibility == Visibility.Visible)
             {
-
+                if (key == Key.OemComma)
+                {
+                    window.charSelect.OutfitBack(null, null);
+                    return;
+                }
+                if (key == Key.OemPeriod)
+                {
+                    window.charSelect.OutfitForward(null, null);
+                    return;
+                }
             }
             else if (window.paletteEditCanvas.Visibility == Visibility.Visible)
             {
@@ -185,6 +195,7 @@ namespace palette.duel
                 if (key == Key.F && modifier == ModifierKeys.Control)
                 {
                     window.paletteEditor.NextFrameWithFocus(null, null);
+                    return;
                 }
                 
                 //
