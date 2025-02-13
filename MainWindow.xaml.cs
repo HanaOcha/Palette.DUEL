@@ -54,11 +54,14 @@ namespace palette.duel
             this.paletteColorWheel.ColorChanged += this.paletteEditor.ColorWithWheel;
             this.paletteColorSlider.ColorChanged += this.paletteEditor.ColorWithSlider;
             this.paletteColorHex.ColorChanged += this.paletteEditor.ColorWithHex;
+            this.focusOpacity.ValueChanged += this.paletteEditor.UpdateDictionary;
 
             for (int i = 0; i < 25; i++)
             {
                 this.paletteGrid.ColumnDefinitions.Add(new ColumnDefinition());
             }
+
+            //
 
             this.watch = new DispatcherTimer(
                 new TimeSpan(0, 0, 0, 0, (int)(1000f / 14f)), 
@@ -332,6 +335,8 @@ namespace palette.duel
             this.UpdatePalette((int)frame.X, (int)frame.Y);
             this.SetPaletteFocus(null);
             this.SetSelectorColor(Color.FromRgb(255, 255, 255));
+
+            this.window.focusOpacity.Value = 25;
         }
         public void SetupPixels()
         {
@@ -452,7 +457,7 @@ namespace palette.duel
                     Color color = this.paletteMatch[key];
                     if (this.selectedPaletteBtn.key != key)
                     {
-                        color.A = (int)(0.25f * 255);
+                        color.A = (byte)(int)(this.window.focusOpacity.Value * 255f / 100f);
                     }
                     this.paletteMatch[key] = color;
                 }

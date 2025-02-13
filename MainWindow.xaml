@@ -208,6 +208,12 @@
                 <colorpicker:SquarePicker x:Name="paletteColorWheel" Canvas.Left="18" Canvas.Top="-177" Height="173" Width="174"
                 VerticalAlignment="Top" HorizontalAlignment="Center"/>
             </Canvas>
+            <Canvas Canvas.Left="720" Canvas.Top="428" Width="210" Height="60">
+                <Rectangle Width="210" Height="60" Canvas.Left="0" Canvas.Top="0" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Rectangle Width="200" Height="50" Canvas.Left="5" Canvas.Top="5" Fill="Black" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <TextBlock Text="Focus Opacity" FontSize="14" FontFamily="Arial Black" Foreground="White" Canvas.Top="10" Canvas.Left="15" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Slider x:Name="focusOpacity" Width="190" Canvas.Left="10" Maximum="100" Minimum="0" Value="25" Canvas.Top="32" HorizontalAlignment="Left" VerticalAlignment="Center" SmallChange="1"/>
+            </Canvas>
         </Canvas>
 
     </Canvas>
