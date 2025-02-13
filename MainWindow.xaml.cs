@@ -1,18 +1,13 @@
-﻿using Microsoft.Win32;
+﻿using ColorPicker.Models;
+using Microsoft.Win32;
 using System.IO;
 using System.Numerics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace palette.duel
 {
@@ -50,6 +45,15 @@ namespace palette.duel
             this.findNextFrame.Click += this.paletteEditor.NextFrameWithFocus;
             this.importPalette.Click += this.paletteEditor.Import;
             this.exportPalette.Click += this.paletteEditor.Export;
+
+            //this.colorPickRed.ValueChanged += this.paletteEditor.UpdateColorWithRGB;
+            //this.colorPickGreen.ValueChanged += this.paletteEditor.UpdateColorWithRGB;
+            //this.colorPickBlue.ValueChanged += this.paletteEditor.UpdateColorWithRGB;
+            //this.colorPickHue.ValueChanged += this.paletteEditor.UpdateColorWithHue;
+            //this.colorPickLight.ValueChanged += this.paletteEditor.UpdateColorWithValue;
+            this.paletteColorWheel.ColorChanged += this.paletteEditor.ColorWithWheel;
+            this.paletteColorSlider.ColorChanged += this.paletteEditor.ColorWithSlider;
+            this.paletteColorHex.ColorChanged += this.paletteEditor.ColorWithHex;
 
             for (int i = 0; i < 25; i++)
             {
@@ -296,6 +300,8 @@ namespace palette.duel
 
         public byte[] exportPixels = new byte[256];
 
+        //public Color currentColor = Color.FromRgb(255, 255, 255);
+
         public PaletteEditor(MainWindow window)
         {
             this.window = window;
@@ -325,6 +331,7 @@ namespace palette.duel
             this.frame = new Vector2();
             this.UpdatePalette((int)frame.X, (int)frame.Y);
             this.SetPaletteFocus(null);
+            this.SetSelectorColor(Color.FromRgb(255, 255, 255));
         }
         public void SetupPixels()
         {
@@ -414,13 +421,7 @@ namespace palette.duel
                 case "Preview":
                     foreach (PaletteButton button in this.paletteButtons)
                     {
-                        Color colorValue = button.value;
-                        if (this.selectedPaletteBtn != null && this.selectedPaletteBtn != button)
-                        {
-                            colorValue.A = 48;
-                        }
-
-                        this.paletteMatch[button.key] = colorValue;
+                        this.paletteMatch[button.key] = button.value;
                     }
                     break;
                 case "Default":
@@ -435,14 +436,26 @@ namespace palette.duel
                         }
                     }
                     break;
-
-                    // base palette
+                // base palette
                 default:
                     foreach (Color c in this.paletteMatch.Keys)
                     {
                         this.paletteMatch[c] = c;
                     }
                     break;
+            }
+
+            if (this.selectedPaletteBtn != null)
+            {
+                foreach (Color key in this.paletteMatch.Keys)
+                {
+                    Color color = this.paletteMatch[key];
+                    if (this.selectedPaletteBtn.key != key)
+                    {
+                        color.A = (int)(0.25f * 255);
+                    }
+                    this.paletteMatch[key] = color;
+                }
             }
 
             UpdatePixels();
@@ -570,6 +583,7 @@ namespace palette.duel
             {
                 button.BorderBrush = new SolidColorBrush(Color.FromRgb(238, 50, 98));
                 selectedPaletteBtn = button;
+                this.SetSelectorColor(button.value);
             }
 
             UpdateDictionary(null, null);
@@ -622,8 +636,101 @@ namespace palette.duel
             }
         }
 
+        //public void UpdateColorDisplay(object? s = null, EventArgs? e = null)
+        //{
+        //    this.window.paletteSelectedColor.Fill = new SolidColorBrush(this.currentColor);
+
+        //    this.window.colorPickRedValue.Text = this.currentColor.R.ToString();
+        //    this.window.colorPickGreenValue.Text = this.currentColor.G.ToString();
+        //    this.window.colorPickBlueValue.Text = this.currentColor.B.ToString();
+
+        //    this.window.colorPickLightValue.Text = this.window.colorPickLight.Value.ToString();
+        //}
+
+        //public void UpdateColorWithRGB(object? sender, EventArgs? e)
+        //{
+        //    System.Drawing.Color hsv = System.Drawing.Color.FromArgb(
+        //        (int)this.window.colorPickRed.Value,
+        //        (int)this.window.colorPickGreen.Value,
+        //        (int)this.window.colorPickBlue.Value
+        //        );
+
+        //    this.window.colorPickHue.Value = (int)hsv.GetHue();
+        //    this.window.colorPickLight.Value = (int)(Math.Max(hsv.R, Math.Max(hsv.G, hsv.B))/255f * 100f);
+
+        //    this.currentColor = Color.FromRgb(hsv.R, hsv.G, hsv.B);
+        //    this.UpdateColorValue(this.currentColor);
+        //}
+        //public void UpdateColorWithHue(object? sender, EventArgs? e)
+        //{
+
+
+        //    this.UpdateColorValue(this.currentColor);
+        //}
+        //public void UpdateColorWithValue(object? sender, EventArgs? e)
+        //{
+        //    Color c = this.currentColor;
+        //    int highest = Math.Max((byte)1, Math.Max(c.R, Math.Max(c.G, c.B)));
+        //    float r = c.R / (float)highest;
+        //    float g = c.G / (float)highest;
+        //    float b = c.B / (float)highest;
+
+        //    int _new = (int)(this.window.colorPickLight.Value / 100f * 255f);
+        //    this.currentColor = Color.FromRgb((byte)(int)(r * _new), (byte)(int)(g * _new), (byte)(int)(b * _new));
+
+        //    this.window.colorPickRed.Value = this.currentColor.R;
+        //    this.window.colorPickGreen.Value = this.currentColor.G;
+        //    this.window.colorPickBlue.Value = this.currentColor.B;
+
+        //    this.UpdateColorValue(this.currentColor);
+        //}
+        public void SetSelectorColor(Color color)
+        {
+            //this.window.colorPickRed.Value = color.R;
+            //this.window.colorPickGreen.Value = color.G;
+            //this.window.colorPickBlue.Value = color.B;
+            //this.currentColor = color;
+
+            //this.UpdateColorWithRGB(null, null);
+
+            this.window.paletteColorWheel.SelectedColor = color;
+            this.window.paletteColorSlider.SelectedColor = color;
+            this.window.paletteColorHex.SelectedColor = color;
+        }
+        public void UpdateColorValue(Color color)
+        {
+            if (this.selectedPaletteBtn != null)
+            {
+                this.selectedPaletteBtn.Set(color);
+                this.UpdateDictionary(null, null);
+            }
+        }
+        public void ColorWithWheel(object? sender, EventArgs? e)
+        {
+            Color color = this.window.paletteColorWheel.SelectedColor;
+            this.window.paletteColorSlider.SelectedColor = color;
+            this.window.paletteColorHex.SelectedColor = color;
+            this.UpdateColorValue(color);
+        }
+        public void ColorWithSlider(object? sender, EventArgs? e)
+        {
+            Color color = this.window.paletteColorSlider.SelectedColor;
+            this.window.paletteColorWheel.SelectedColor = color;
+            this.window.paletteColorHex.SelectedColor = color;
+            this.UpdateColorValue(color);
+        }
+        public void ColorWithHex(object? sender, EventArgs? e)
+        {
+            Color color = this.window.paletteColorHex.SelectedColor;
+            this.window.paletteColorSlider.SelectedColor = color;
+            this.window.paletteColorWheel.SelectedColor = color;
+            this.UpdateColorValue(color);
+        }
+
         public void Import(object? sender, EventArgs? e)
         {
+            this.SetPaletteFocus(null);
+
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.InitialDirectory = Data.PATH.I;
             dialog.Filter = ".PNG Format (*.png)|*.png";
@@ -657,6 +764,8 @@ namespace palette.duel
         }
         public void Export(object? sender, EventArgs? e)
         {
+            this.SetPaletteFocus(null);
+
             List<Color> colors = new List<Color>(this.paletteMatch.Values);
             colors.Add(Color.FromArgb(0, 0, 0, 0));
             BitmapPalette palette = new BitmapPalette(colors);

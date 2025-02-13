@@ -20,4 +20,8 @@
 	  </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="PixiEditor.ColorPicker" Version="3.4.1" />
+  </ItemGroup>
+
 </Project>
