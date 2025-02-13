@@ -9,6 +9,8 @@
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <PackageIcon>Primer.png</PackageIcon>
+    <ApplicationIcon>assets\icons\Primer.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +28,13 @@
 
   <ItemGroup>
     <Resource Include="reset.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="assets\icons\Primer.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
