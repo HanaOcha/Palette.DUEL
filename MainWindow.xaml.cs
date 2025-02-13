@@ -283,9 +283,9 @@ namespace palette.duel
         public Vector2 frame = new Vector2();
 
         public BitmapSource? baseBit;
+        public BitmapPalette? basePaletteKeys; // each color in the base palette is unique
         public WriteableBitmap? editBit;
-        public BitmapPalette? basePaletteKeys;
-        public BitmapPalette? defaultPaletteKeys;
+        public List<Color> defaultColors = new List<Color>(); // kept as color list as each color may not be unique
 
         public List<PaletteButton> paletteButtons = new List<PaletteButton>();
         public PaletteButton? selectedPaletteBtn = null;
@@ -334,6 +334,8 @@ namespace palette.duel
             this.paletteButtons.Clear();
             this.pixpoints.Clear();
             this.paletteMatch.Clear();
+            this.defaultColors.Clear();
+
             this.SetupPixels();
             this.window.chrPaletteDisplay.Source = this.editBit;
 
@@ -389,11 +391,24 @@ namespace palette.duel
             }
             using (FileStream stream = File.OpenRead(outfit.normal))
             {
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.StreamSource = stream; bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                this.defaultPaletteKeys = new BitmapPalette(bitmap, 100);
+                BitmapImage imageMap = new BitmapImage();
+                imageMap.BeginInit();
+                imageMap.StreamSource = stream; imageMap.CacheOption = BitmapCacheOption.OnLoad;
+                imageMap.EndInit();
+
+                BitmapPalette defaultPalette = new BitmapPalette(imageMap, 100);
+                FormatConvertedBitmap bitmap = new FormatConvertedBitmap(imageMap, PixelFormats.Bgra32, defaultPalette, 0);
+                
+                int s = (100 * bitmap.Format.BitsPerPixel + 7) / 8;
+                byte[] pixels = new byte[s];
+                bitmap.CopyPixels(pixels, s, 0);
+
+                for (int i = 0; i < this.basePaletteKeys.Colors.Count; i++)
+                {
+                    int j = i * 4;
+                    Color color = Color.FromArgb(pixels[j + 3], pixels[j + 2], pixels[j + 1], pixels[j]);
+                    this.defaultColors.Add(color);
+                }
             }
 
             foreach (Color c in this.basePaletteKeys.Colors)
@@ -439,7 +454,7 @@ namespace palette.duel
                     for (int i = 0; i < this.basePaletteKeys.Colors.Count; i++)
                     {
                         Color bColor = this.basePaletteKeys.Colors[i];
-                        Color dColor = this.defaultPaletteKeys.Colors[i];
+                        Color dColor = this.defaultColors[i];
 
                         if (this.paletteMatch.ContainsKey(bColor))
                         {
@@ -754,18 +769,25 @@ namespace palette.duel
             {
                 using (FileStream stream = File.OpenRead(dialog.FileName))
                 {
-                    BitmapImage bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.StreamSource = stream; bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    BitmapPalette filePalette = new BitmapPalette(bitmap, 100);
+                    BitmapImage imageMap = new BitmapImage();
+                    imageMap.BeginInit();
+                    imageMap.StreamSource = stream; imageMap.CacheOption = BitmapCacheOption.OnLoad;
+                    imageMap.EndInit();
+                    BitmapPalette paletteMap = new BitmapPalette(imageMap, 100);
 
-                    for (int i = 0; i < paletteButtons.Count && i < filePalette.Colors.Count; i++)
+                    BitmapSource bitmap = new FormatConvertedBitmap(imageMap, PixelFormats.Bgra32, paletteMap, 0);
+
+                    int stride = (bitmap.PixelWidth * bitmap.Format.BitsPerPixel + 7) / 8;
+                    byte[] pixels = new byte[stride * bitmap.PixelHeight];
+                    bitmap.CopyPixels(pixels, stride, 0);
+
+                    for (int i = 0; i < this.paletteButtons.Count; i++)
                     {
-                        Color c = filePalette.Colors[i];
-                        if (!(c.R == 205 && c.G == 205 && c.B == 205))
+                        int j = i * 4;
+                        if (pixels.Length > j + 3)
                         {
-                            paletteButtons[i].Set(c);
+                            Color color = Color.FromArgb(pixels[j + 3], pixels[j + 2], pixels[j + 1], pixels[j]);
+                            this.paletteButtons[i].Set(color);
                         }
                     }
                 }
