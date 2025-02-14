@@ -4,7 +4,7 @@ A Palette creator for [Duelists of Eden](https://store.steampowered.com/app/1664
 
 ## Features
 A full palette editor similar to [yert.pink](https://yert.pink/paletteeditor)
-![Screenshot 2025-02-13 025027](https://github.com/user-attachments/assets/cc0c245e-7333-48a4-aef5-1eaf76c59286)
+![Screenshot 2025-02-14 170935](https://github.com/user-attachments/assets/8e11610d-1ca9-43b9-8828-e01bc087a1bb)
 
 - Create and edit each pixel of a palette file
 - View the palette and its animation in real time
