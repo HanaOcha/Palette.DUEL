@@ -1,0 +1,34 @@
+﻿<Window x:Class="palette.duel.DropperWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:palette.duel"
+        mc:Ignorable="d"
+        Title="Palette.DUEL Dropper" Background="Black" Width="400" Height="400" HorizontalAlignment="Left" VerticalAlignment="Top">
+
+    <Canvas Canvas.Top="0" Canvas.Left="0" UseLayoutRounding="False" RenderTransformOrigin="0,0">
+
+        <Image x:Name="dropperImage" Canvas.Top="0" Canvas.Left="0"
+               RenderOptions.BitmapScalingMode="NearestNeighbor"  Stretch="None"
+               HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0,0"
+               MouseLeftButtonDown="ClickImage">
+        </Image>
+
+        <Slider Canvas.Top="340" RenderTransformOrigin="0,1" HorizontalAlignment="Center" VerticalAlignment="Top" Width="350"
+                x:Name="scrollHorizontal" Maximum="100" Minimum="0" Value="0" SmallChange="1" ValueChanged="Scroll"/>
+
+        <Slider Canvas.Left="305" Canvas.Top="61" RenderTransformOrigin="1,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="299" Height="20"
+                x:Name="scrollVertical" Maximum="100" Minimum="0" Value="0" SmallChange="1" ValueChanged="Scroll">
+            <Slider.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="90"/>
+                    <TranslateTransform X="-219" Y="239"/>
+                </TransformGroup>
+            </Slider.RenderTransform>
+        </Slider>
+
+    </Canvas>
+</Window>

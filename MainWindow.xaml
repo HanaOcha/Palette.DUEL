@@ -156,8 +156,8 @@
                 </Grid.RowDefinitions>
             </Grid>
 
-            <local:DuelistButton x:Name="importPalette" Style="{DynamicResource NoBGChange}"  Content="IMPORT" Canvas.Left="16" Canvas.Top="455" 
-                Height="35" Width="115" HorizontalAlignment="Center" VerticalAlignment="Top"
+            <local:DuelistButton x:Name="importPalette" Style="{DynamicResource NoBGChange}"  Content="IMPORT" Canvas.Left="12" Canvas.Top="455" 
+                Height="35" Width="115" HorizontalAlignment="Left" VerticalAlignment="Top"
                 FontSize="16" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
                 BorderBrush="White" BorderThickness="3,3,3,3" />
             <local:DuelistButton x:Name="exportPalette" Style="{DynamicResource NoBGChange}"  Content="EXPORT" Canvas.Left="141" Canvas.Top="455" 
@@ -232,6 +232,10 @@
                     </CheckBox.LayoutTransform>
                 </CheckBox>
             </Canvas>
+
+            <local:DuelistButton x:Name="importDropper" Style="{DynamicResource NoBGChange}"  Content="Reference" Canvas.Left="290" Canvas.Top="455" 
+                Height="35" Width="120" FontSize="16" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
+                BorderBrush="White" BorderThickness="3,3,3,3" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
             <Button x:Name="resetPaletteEditor" Canvas.Left="901" Width="30" Height="30"
                 Canvas.Top="16" HorizontalAlignment="Left" VerticalAlignment="Top" 

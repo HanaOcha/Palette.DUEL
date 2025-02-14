@@ -10,8 +10,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using System.Reflection;
-using System.Windows.Controls.Primitives;
 using System.Windows.Shapes;
 
 namespace palette.duel
@@ -65,6 +63,7 @@ namespace palette.duel
             this.findNextFrame.Click += this.paletteEditor.NextFrameWithFocus;
             this.importPalette.Click += this.paletteEditor.Import;
             this.exportPalette.Click += this.paletteEditor.Export;
+            this.importDropper.Click += this.paletteEditor.AddReference;
 
             //this.colorPickRed.ValueChanged += this.paletteEditor.UpdateColorWithRGB;
             //this.colorPickGreen.ValueChanged += this.paletteEditor.UpdateColorWithRGB;
@@ -364,7 +363,7 @@ namespace palette.duel
             this.SetupPixels();
             this.window.chrPaletteDisplay.Source = this.editBit;
 
-            this.frame = new Vector2();
+            this.frame = outfit.spriteData.preview;
             this.UpdatePalette((int)frame.X, (int)frame.Y);
             this.SetPaletteFocus(null);
             this.SetSelectorColor(Color.FromRgb(255, 255, 255));
@@ -873,6 +872,25 @@ namespace palette.duel
                     encoder.Frames.Add(BitmapFrame.Create(bitmap));
                     encoder.Save(stream);
                 }
+            }
+        }
+        public void AddReference(object? s, EventArgs? e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = Data.PATH.I;
+            dialog.Filter = "Image|*.png;*.jpg;*.jpeg";
+            dialog.Title = "Select an image file to import.";
+            dialog.RestoreDirectory = true;
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                Window dropper = new DropperWindow(this.window, dialog.FileName);
+                dropper.Owner = this.window;
+                dropper.Show();
+
+                this.window.Closed += new EventHandler((x, y) => dropper.Close());
             }
         }
     }

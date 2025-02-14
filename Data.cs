@@ -76,7 +76,11 @@ namespace palette.duel
                         outfit.sheet = PATH.sheets + character.name + "_" + outfit.name + ".png";
                         outfit.palette = PATH.palettes + character.name + "_" + outfit.name + ".png";
                         outfit.normal = PATH.palettes + character.name + "_" + outfit.name + "-G.png";
-                        outfit.spriteData = paletteCounts[character.name + "_" + outfit.name];
+                        
+                        if (paletteCounts.ContainsKey(character.name + "_" + outfit.name))
+                        {
+                            outfit.spriteData = paletteCounts[character.name + "_" + outfit.name];
+                        }
 
                         character.outfits.Add(outfit);
                     }
