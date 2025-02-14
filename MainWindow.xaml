@@ -85,7 +85,7 @@
             <Image x:Name="chrPaletteDisplay" Source="/assets/sheets/Saffron_Default.png"
                     RenderOptions.BitmapScalingMode="NearestNeighbor"
                     Canvas.Left="0" HorizontalAlignment="Right" VerticalAlignment="Top" 
-                    Stretch="None" RenderTransformOrigin="0,0" IsEnabled="False">
+                    Stretch="None" RenderTransformOrigin="0,0">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="3.5" ScaleY="3.5"/>

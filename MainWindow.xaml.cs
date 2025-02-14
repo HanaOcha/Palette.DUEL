@@ -20,6 +20,7 @@ namespace palette.duel
     {
         public required CharacterSelect charSelect;
         public required PaletteEditor paletteEditor;
+        public required PaletteHover paletteHover;
 
         public DispatcherTimer watch;
         public MainWindow()
@@ -30,10 +31,9 @@ namespace palette.duel
             Data.ReadPaletteCounts();
             Data.ReadCharacters();
 
-            //
-
             this.CharacterSelectUI();
             this.PaletteEditorUI();
+            this.PaletteHoverSetup();
 
             this.watch = new DispatcherTimer(
                 new TimeSpan(0, 0, 0, 0, (int)(1000f / 14f)), 
@@ -81,6 +81,11 @@ namespace palette.duel
             {
                 this.paletteGrid.ColumnDefinitions.Add(new ColumnDefinition());
             }
+        }
+        public void PaletteHoverSetup()
+        {
+            this.paletteHover = new PaletteHover(this);
+            this.chrPaletteDisplay.MouseLeftButtonDown += this.paletteHover.ColorPoint;
         }
         private void ReadShortcuts(object sender, KeyEventArgs e)
         {
@@ -871,7 +876,6 @@ namespace palette.duel
             }
         }
     }
-
     public class PaletteButton : Button
     {
         public PaletteEditor menu;
@@ -929,7 +933,7 @@ namespace palette.duel
             this.ContextMenu = context;
         }
 
-        public void PaletteFocus(object? sender, EventArgs e)
+        public void PaletteFocus(object? sender, EventArgs? e)
         {
             if (menu.selectedPaletteBtn == this)
             {
@@ -950,6 +954,58 @@ namespace palette.duel
                 this.menu.SetSelectorColor(value);
             }
             this.menu.UpdateDictionary(null, null);
+        }
+    }
+
+    public class PaletteHover
+    {
+        MainWindow window;
+        PaletteEditor editor;
+        public PaletteHover(MainWindow window)
+        {
+            this.window = window;
+            this.editor = window.paletteEditor;
+        }
+
+        public bool GetPixel(out PaletteEditor.Pixpoint pixpoint)
+        {
+            Point mouse = Mouse.GetPosition(this.window.chrPaletteDisplay);
+
+            //Vector2 localPixel = new Vector2(
+            //    MathF.Ceiling((float)mouse.X / 3.5f), MathF.Ceiling((float)mouse.Y / 3.5f)
+            //    );
+            //Vector2 framePos = this.editor.frame * this.editor.outfit.spriteData.size;
+
+            // Mouse already accounts size and offset
+
+            int x = (int)MathF.Round((float)mouse.X);
+            int y = (int)MathF.Round((float)mouse.Y);
+
+            foreach (PaletteEditor.Pixpoint point in editor.pixpoints)
+            {
+                if (point.x == x && point.y == y)
+                {
+                    pixpoint = point;
+                    return true;
+                }
+            }
+
+            pixpoint = new PaletteEditor.Pixpoint(0, 0, new Color());
+            return false;
+        }
+        public void ColorPoint(object? o, EventArgs? e)
+        {
+            if (GetPixel(out PaletteEditor.Pixpoint point))
+            {
+                foreach (PaletteButton btn in this.editor.paletteButtons)
+                {
+                    if (btn.key == point.color)
+                    {
+                        btn.PaletteFocus(null, null);   
+                        break;
+                    }
+                }
+            }
         }
     }
 }
