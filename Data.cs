@@ -175,65 +175,68 @@ namespace palette.duel
             }
             else if (window.paletteEditCanvas.Visibility == Visibility.Visible)
             {
-                if (key == Key.S && modifier == ModifierKeys.Control)
+                switch (key)
                 {
-                    window.paletteEditor.Export(null, null);
-                    return;
+                    case Key.OemComma:
+                        if (modifier == ModifierKeys.Control)
+                        {
+                            window.paletteEditor.FrameBackT(null, null);
+                            break;
+                        }
+                        window.paletteEditor.FrameBack(null, null);
+                        break;
+                    case Key.OemPeriod:
+                        if (modifier == ModifierKeys.Control)
+                        {
+                            window.paletteEditor.FrameForwardT(null, null);
+                            break;
+                        }
+                        window.paletteEditor.FrameForward(null, null);
+                        break;
+
+                    case Key.S:
+                        if (modifier == ModifierKeys.Control)
+                        {
+                            window.paletteEditor.Export(null, null);
+                        }
+                        break;
+                    case Key.F:
+                        if (modifier == ModifierKeys.Control)
+                        {
+                            window.paletteEditor.NextFrameWithFocus(null, null);
+                        }
+                        break;
+                    case Key.A:
+                        if (window.paletteAnimate.IsChecked != null)
+                        {
+                            window.paletteAnimate.IsChecked = !window.paletteAnimate.IsChecked;
+                        }
+                        break;
+                    case Key.I:
+                        window.paletteEditor.SetIdleFrame(null, null);
+                        break;
+                    case Key.O:
+                        if (window.focusOpacityToggle.IsChecked != null)
+                        {
+                            window.focusOpacityToggle.IsChecked = !window.focusOpacityToggle.IsChecked;
+                            window.paletteEditor.UpdateDictionary(null, null);
+                        }
+                        break;
+
+                    case Key.D1:
+                        window.palettePreview.SelectedIndex = 0;
+                        break;
+                    case Key.D2:
+                        window.palettePreview.SelectedIndex = 1;
+                        break;
+                    case Key.D3:
+                        window.palettePreview.SelectedIndex = 2;
+                        break;
                 }
 
-                if (key == Key.OemComma && modifier == ModifierKeys.Control)
+                if (key.ToString().Contains("D"))
                 {
-                    window.paletteEditor.FrameBackT(null, null);
-                    return;
-                }
-                if (key == Key.OemPeriod && modifier == ModifierKeys.Control)
-                {
-                    window.paletteEditor.FrameForwardT(null, null);
-                    return;
-                }
-
-                if (key == Key.F && modifier == ModifierKeys.Control)
-                {
-                    window.paletteEditor.NextFrameWithFocus(null, null);
-                    return;
-                }
-                
-                //
-
-                if (key == Key.A && window.paletteAnimate.IsChecked != null)
-                {
-                    window.paletteAnimate.IsChecked = !window.paletteAnimate.IsChecked;
-                    return;
-                }
-
-                if (key == Key.D1)
-                {
-                    window.palettePreview.SelectedIndex = 0;
                     window.paletteEditor.UpdateDictionary(null, null);
-                    return;
-                }
-                if (key == Key.D2)
-                {
-                    window.palettePreview.SelectedIndex = 1;
-                    window.paletteEditor.UpdateDictionary(null, null);
-                    return;
-                }
-                if (key == Key.D3)
-                {
-                    window.palettePreview.SelectedIndex = 2;
-                    window.paletteEditor.UpdateDictionary(null, null);
-                    return;
-                }
-
-                if (key == Key.OemComma)
-                {
-                    window.paletteEditor.FrameBack(null, null);
-                    return;
-                }
-                if (key == Key.OemPeriod)
-                {
-                    window.paletteEditor.FrameForward(null, null);
-                    return;
                 }
             }
         }

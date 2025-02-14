@@ -13,6 +13,12 @@
 
     <Canvas x:Name="mainCanvas">
 
+        <Button x:Name="keyCatcher" Canvas.Left="0" Width="0" Height="0" 
+                BorderBrush="#00000000" Background="Transparent"
+                HorizontalAlignment="Center" VerticalAlignment="Center">
+        </Button>
+        <!--Used to catch Enter on textbox to keep up shortcuts-->
+
         <Canvas x:Name="characterSelectCanvas" IsEnabled="False" Visibility="Hidden">
             <Image x:Name="chrSelectDisplay" Source="/assets/sheets/Saffron_Default.png"
                 RenderOptions.BitmapScalingMode="NearestNeighbor"
@@ -95,40 +101,45 @@
                         HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0,0" Width="222" Height="27" Canvas.Left="16"
 />
 
-            <local:DuelistButton x:Name="paletteFrameBack" Style="{DynamicResource NoBGChange}"  Content="&lt;" Canvas.Left="152" Canvas.Top="18" 
+            <local:DuelistButton x:Name="paletteFrameBack" Style="{DynamicResource NoBGChange}"  Content="&lt;" Canvas.Left="181" Canvas.Top="18" 
                 Height="24" Width="24" HorizontalAlignment="Left" VerticalAlignment="Center"
                 FontSize="12" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
                 BorderBrush="White" BorderThickness="2,2,2,2" />
-            <local:DuelistButton x:Name="paletteFrameForward" Style="{DynamicResource NoBGChange}"  Content="&gt;" Canvas.Left="181" Canvas.Top="18" 
+            <local:DuelistButton x:Name="paletteFrameForward" Style="{DynamicResource NoBGChange}"  Content="&gt;" Canvas.Left="210" Canvas.Top="18" 
                 Height="24" Width="24" HorizontalAlignment="Left" VerticalAlignment="Center"
                 FontSize="12" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
                 BorderBrush="White" BorderThickness="2,2,2,2" />
-            <local:DuelistButton x:Name="paletteFrameBackTen" Style="{DynamicResource NoBGChange}"  Content="10" Canvas.Left="152" Canvas.Top="47" 
+            <local:DuelistButton x:Name="paletteFrameBackTen" Style="{DynamicResource NoBGChange}"  Content="10" Canvas.Left="152" Canvas.Top="18" 
                 Height="24" Width="24" HorizontalAlignment="Left" VerticalAlignment="Center"
                 FontSize="12" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
                 BorderBrush="White" BorderThickness="2,2,2,2" />
-            <local:DuelistButton x:Name="paletteFrameForwardTen" Style="{DynamicResource NoBGChange}"  Content="10" Canvas.Left="181" Canvas.Top="47" 
+            <local:DuelistButton x:Name="paletteFrameForwardTen" Style="{DynamicResource NoBGChange}"  Content="10" Canvas.Left="239" Canvas.Top="18" 
                 Height="24" Width="24" HorizontalAlignment="Left" VerticalAlignment="Center"
                 FontSize="12" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
                 BorderBrush="White" BorderThickness="2,2,2,2" />
 
-            <local:DuelistButton x:Name="findNextFrame" Style="{DynamicResource NoBGChange}"  Content="Find Next" Canvas.Left="16" Canvas.Top="51" 
+            <local:DuelistButton x:Name="setIdleFrame" Style="{DynamicResource NoBGChange}"  Content="Idle Frame" Canvas.Left="16" Canvas.Top="50" 
+                Height="20" Width="90" FontSize="12.5" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
+                BorderBrush="White" BorderThickness="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Center" />
+
+            <local:DuelistButton x:Name="findNextFrame" Style="{DynamicResource NoBGChange}"  Content="Find Next" Canvas.Left="171" Canvas.Top="50" 
                 Height="20" Width="92" HorizontalAlignment="Left" VerticalAlignment="Center"
-                FontSize="12" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
+                FontSize="12.5" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
                 BorderBrush="White" BorderThickness="2,2,2,2" />
 
-            <TextBlock Canvas.Right="0" Canvas.Top="18" TextWrapping="Wrap" Text="Animate" 
-                FontSize="24" FontFamily="Arial Black" Foreground="White" RenderTransformOrigin="0,0" Width="111" Height="27" Canvas.Left="395" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <CheckBox x:Name="paletteAnimate" Canvas.Left="516" Canvas.Top="19" 
-                Width="22" Height="28" BorderBrush="White" Background="White" BorderThickness="2,2,2,2" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock Canvas.Right="0" Canvas.Top="16" TextWrapping="Wrap" Text="Animate" 
+                FontSize="24" FontFamily="Arial Black" Foreground="White" RenderTransformOrigin="0,0" Width="111" Height="27" Canvas.Left="431" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <CheckBox x:Name="paletteAnimate" Canvas.Left="547" Canvas.Top="16" 
+                Width="18" Height="18" BorderBrush="White" Background="White" BorderThickness="2,2,2,2" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
                 </CheckBox.LayoutTransform>
             </CheckBox>
 
-            <ComboBox x:Name="palettePreview" Height="32" Width="136" Background="#00000000" BorderBrush="White" BorderThickness="3,3,3,3" 
-                     FontSize="24" FontFamily="Arial Black" 
-                     Canvas.Left="238" Canvas.Top="15" HorizontalAlignment="Center" VerticalAlignment="Top" IsReadOnly="True" SelectedIndex="1">
+
+            <ComboBox x:Name="palettePreview" Height="30" Width="120" Background="#00000000" BorderBrush="White" BorderThickness="3,3,3,3" 
+                     FontSize="20" FontFamily="Arial Black" 
+                     Canvas.Left="290" Canvas.Top="16" HorizontalAlignment="Left" VerticalAlignment="Top" IsReadOnly="True" SelectedIndex="1">
                 <ComboBoxItem>Base</ComboBoxItem>
                 <ComboBoxItem IsSelected="True">Preview</ComboBoxItem>
                 <ComboBoxItem>Default</ComboBoxItem>
@@ -211,8 +222,15 @@
             <Canvas Canvas.Left="720" Canvas.Top="428" Width="210" Height="60">
                 <Rectangle Width="210" Height="60" Canvas.Left="0" Canvas.Top="0" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <Rectangle Width="200" Height="50" Canvas.Left="5" Canvas.Top="5" Fill="Black" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <TextBlock Text="Focus Opacity" FontSize="14" FontFamily="Arial Black" Foreground="White" Canvas.Top="10" Canvas.Left="15" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Slider x:Name="focusOpacity" Width="190" Canvas.Left="10" Maximum="100" Minimum="0" Value="25" Canvas.Top="32" HorizontalAlignment="Left" VerticalAlignment="Center" SmallChange="1"/>
+                <TextBlock Text="Focus Opacity" FontSize="14" FontFamily="Arial Black" Foreground="White" Canvas.Top="12" Canvas.Left="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Slider x:Name="focusOpacity" Width="154" Canvas.Left="10" Maximum="100" Minimum="0" Value="025" Canvas.Top="31" HorizontalAlignment="Center" VerticalAlignment="Top" SmallChange="1"/>
+
+                <CheckBox x:Name="focusOpacityToggle" Canvas.Left="169" Canvas.Top="18" 
+                Width="22" Height="28" BorderBrush="White" Background="White" BorderThickness="2,2,2,2" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
             </Canvas>
 
             <Button x:Name="resetPaletteEditor" Canvas.Left="901" Width="30" Height="30"
@@ -222,6 +240,7 @@
                     <ImageBrush ImageSource="assets/icons/reset.png"/>
                 </Button.Background>
             </Button>
+
         </Canvas>
 
     </Canvas>

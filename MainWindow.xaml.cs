@@ -1,4 +1,5 @@
-﻿using ColorPicker.Models;
+﻿using ColorPicker;
+using ColorPicker.Models;
 using Microsoft.Win32;
 using System.IO;
 using System.Numerics;
@@ -9,13 +10,15 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Reflection;
+using System.Windows.Controls.Primitives;
 
 namespace palette.duel
 {
     public partial class MainWindow : Window
     {
-        public CharacterSelect charSelect;
-        public PaletteEditor paletteEditor;
+        public required CharacterSelect charSelect;
+        public required PaletteEditor paletteEditor;
 
         public DispatcherTimer watch;
         public MainWindow()
@@ -28,21 +31,36 @@ namespace palette.duel
 
             //
 
+            this.CharacterSelectUI();
+            this.PaletteEditorUI();
+
+            this.watch = new DispatcherTimer(
+                new TimeSpan(0, 0, 0, 0, (int)(1000f / 14f)), 
+                DispatcherPriority.Background,
+                this.paletteEditor.Animate, Dispatcher.CurrentDispatcher);
+            this.watch.IsEnabled = false;
+
+            this.paletteEditor.Hide();
+        }
+        public void CharacterSelectUI()
+        {
             charSelect = new CharacterSelect(this);
             charSelect.UpdateOutfit();
             this.selectOutfitBack.Click += charSelect.OutfitBack;
             this.selectOutfitForward.Click += charSelect.OutfitForward;
             this.finalizePaint.Click += charSelect.FinalizePaint;
             charSelect.Show();
-
-            //
-
+        }
+        public void PaletteEditorUI()
+        {
             this.paletteEditor = new PaletteEditor(this);
             this.paletteFrameBack.Click += this.paletteEditor.FrameBack;
             this.paletteFrameForward.Click += this.paletteEditor.FrameForward;
             this.paletteFrameBackTen.Click += this.paletteEditor.FrameBackT;
             this.paletteFrameForwardTen.Click += this.paletteEditor.FrameForwardT;
             this.palettePreview.DropDownClosed += this.paletteEditor.UpdateDictionary;
+            this.focusOpacityToggle.Click += this.paletteEditor.UpdateDictionary;
+            this.setIdleFrame.Click += this.paletteEditor.SetIdleFrame;
             this.findNextFrame.Click += this.paletteEditor.NextFrameWithFocus;
             this.importPalette.Click += this.paletteEditor.Import;
             this.exportPalette.Click += this.paletteEditor.Export;
@@ -62,19 +80,20 @@ namespace palette.duel
             {
                 this.paletteGrid.ColumnDefinitions.Add(new ColumnDefinition());
             }
-
-            //
-
-            this.watch = new DispatcherTimer(
-                new TimeSpan(0, 0, 0, 0, (int)(1000f / 14f)), 
-                DispatcherPriority.Background,
-                this.paletteEditor.Animate, Dispatcher.CurrentDispatcher);
-            this.watch.IsEnabled = false;
-
-            this.paletteEditor.Hide();
         }
         private void ReadShortcuts(object sender, KeyEventArgs e)
         {
+            TextBox? anyTextBox = Keyboard.FocusedElement as TextBox;
+            if (anyTextBox != null)
+            {
+                if (e.Key == Key.Return)
+                {
+                    Keyboard.Focus(this.keyCatcher);
+                    // for some reason if a button isnt focused on return press on textbox shortcuts break
+                }
+                return;
+            }
+
             Shortcuts.ReadKey(this, e.Key, Keyboard.Modifiers);
         }
     }
@@ -471,7 +490,7 @@ namespace palette.duel
                     break;
             }
 
-            if (this.selectedPaletteBtn != null)
+            if (this.selectedPaletteBtn != null && this.window.focusOpacityToggle.IsChecked == true)
             {
                 foreach (Color key in this.paletteMatch.Keys)
                 {
@@ -595,6 +614,11 @@ namespace palette.duel
             {
                 FrameBack(sender, e);
             }
+        }
+        public void SetIdleFrame(object? sender, EventArgs? e)
+        {
+            this.frame = this.outfit.spriteData.preview;
+            this.UpdatePalette((int)frame.X, (int)frame.Y);
         }
 
         public void SetPaletteFocus(PaletteButton? button)
