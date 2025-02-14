@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Reflection;
 using System.Windows.Controls.Primitives;
+using System.Windows.Shapes;
 
 namespace palette.duel
 {
@@ -893,8 +894,41 @@ namespace palette.duel
             this.TabIndex = menu.paletteButtons.Count;
             this.BorderThickness = new Thickness(2);
 
+            this.CreateContext();
             this.Click += this.PaletteFocus;
         }
+        public void CreateContext()
+        {
+            ContextMenu context = new ContextMenu();
+            context.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            context.Background = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+            context.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            context.BorderThickness = new Thickness(2, 2, 2, 2);
+            context.Closed += this.CloseContext;
+
+            MenuItem toBase = new MenuItem(); context.Items.Add(toBase);
+            toBase.Header = "set to base color";
+            toBase.Click += new RoutedEventHandler((x, y) => this.Set(this.key));
+            toBase.Icon = new Rectangle(); ((Rectangle)toBase.Icon).Fill = new SolidColorBrush(this.key);
+
+            int colorIndex = this.menu.paletteButtons.Count;
+            if (this.menu.defaultColors.Count > colorIndex)
+            {
+                MenuItem toDefault = new MenuItem(); context.Items.Add(toDefault);
+                toDefault.Header = "set to default color";
+                Color defaultColor = this.menu.defaultColors[colorIndex];
+                toDefault.Click += new RoutedEventHandler((x, y) => this.Set(defaultColor));
+                toDefault.Icon = new Rectangle(); ((Rectangle)toDefault.Icon).Fill = new SolidColorBrush(defaultColor);
+            }
+            
+            foreach (MenuItem item in context.Items)
+            {
+                item.FontSize = 14;
+            }
+
+            this.ContextMenu = context;
+        }
+
         public void PaletteFocus(object? sender, EventArgs e)
         {
             if (menu.selectedPaletteBtn == this)
@@ -908,6 +942,14 @@ namespace palette.duel
         {
             this.value = color;
             this.Background = new SolidColorBrush(color);
+        }
+        public void CloseContext(object? sender, EventArgs e)
+        {
+            if (this.menu.selectedPaletteBtn == this)
+            {
+                this.menu.SetSelectorColor(value);
+            }
+            this.menu.UpdateDictionary(null, null);
         }
     }
 }
