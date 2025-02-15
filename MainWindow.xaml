@@ -245,6 +245,14 @@
                 </Button.Background>
             </Button>
 
+            <Canvas>
+                <TextBox x:Name="animationFPS" Canvas.Left="426" TextWrapping="Wrap" Text="60" Canvas.Top="46" Width="30" Height="24" MaxLength="2" MaxLines="1"
+                    FontSize="16" FontFamily="Arial Black"  HorizontalAlignment="Left" VerticalAlignment="Center" BorderThickness="2, 2, 2, 2"
+                    Background="#00000000" BorderBrush="Transparent" CaretBrush="White" Foreground="White" TextAlignment="Right" VerticalContentAlignment="Center"/>
+                <TextBlock Canvas.Right="0" Canvas.Top="49" TextWrapping="Wrap" Text="FPS" 
+                    FontSize="16" FontFamily="Arial Black" Foreground="White" RenderTransformOrigin="0,0" Width="37" Height="26" Canvas.Left="461" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Canvas>
+
         </Canvas>
 
     </Canvas>

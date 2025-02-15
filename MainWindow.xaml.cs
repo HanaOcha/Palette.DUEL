@@ -57,6 +57,7 @@ namespace palette.duel
             this.paletteFrameForward.Click += this.paletteEditor.FrameForward;
             this.paletteFrameBackTen.Click += this.paletteEditor.FrameBackT;
             this.paletteFrameForwardTen.Click += this.paletteEditor.FrameForwardT;
+            this.animationFPS.KeyDown += this.paletteEditor.UpdateFPS;
             this.palettePreview.DropDownClosed += this.paletteEditor.UpdateDictionary;
             this.focusOpacityToggle.Click += this.paletteEditor.UpdateDictionary;
             this.setIdleFrame.Click += this.paletteEditor.SetIdleFrame;
@@ -305,6 +306,7 @@ namespace palette.duel
         public Character character;
         public Outfit outfit;
         public Vector2 frame = new Vector2();
+        public int animFPS = 14;
 
         public BitmapSource? baseBit;
         //public BitmapPalette? basePaletteKeys;
@@ -370,6 +372,10 @@ namespace palette.duel
             this.SetSelectorColor(Color.FromRgb(255, 255, 255));
 
             this.window.focusOpacity.Value = 25;
+
+            this.animFPS = 15;
+            this.window.watch.Interval = new TimeSpan(0, 0, 0, 0, (int)(1000f / (float)this.animFPS));
+            this.window.animationFPS.Text = this.animFPS.ToString();
         }
         public void SetupPixels()
         {
@@ -584,6 +590,24 @@ namespace palette.duel
             if (this.window.paletteEditCanvas.IsEnabled && flag != null && (bool)flag)
             {
                 this.FrameForward(sender, e);
+            }
+        }
+        public void UpdateFPS(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                string fpsText = this.window.animationFPS.Text;
+                if (int.TryParse(fpsText, out int fps))
+                {
+                    if (fps > 0)
+                    {
+                        this.animFPS = fps;
+                        this.window.watch.Interval = new TimeSpan(0, 0, 0, 0, (int)(1000f / (float)animFPS));
+                        return;
+                    }
+                }
+
+                this.window.animationFPS.Text = animFPS.ToString();
             }
         }
 
