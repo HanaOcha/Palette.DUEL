@@ -39,6 +39,5 @@ Ctrl+S    Export
 - Palette buttons have Right-Click functionality
 
 ### Known Bugs
-- Known issue where a picture imported via Reference will not have its colors picked correctly
-  - It will genuinely just be a random image specific to your machine
-  - Copying or downloading the image from anywhere else fixes it
+- Issue where a picture imported via Reference may not have its colors picked accurately
+  - Copying or downloading the image from anywhere else may fix it
