@@ -307,9 +307,10 @@ namespace palette.duel
         public Vector2 frame = new Vector2();
 
         public BitmapSource? baseBit;
-        public BitmapPalette? basePaletteKeys; // each color in the base palette is unique
+        //public BitmapPalette? basePaletteKeys;
+        public List<Color> baseColors = new List<Color>();
         public WriteableBitmap? editBit;
-        public List<Color> defaultColors = new List<Color>(); // kept as color list as each color may not be unique
+        public List<Color> defaultColors = new List<Color>();
 
         public List<PaletteButton> paletteButtons = new List<PaletteButton>();
         public PaletteButton? selectedPaletteBtn = null;
@@ -379,6 +380,7 @@ namespace palette.duel
                 bitmap.StreamSource = stream;
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.EndInit();
+
                 this.baseBit = new FormatConvertedBitmap(bitmap, PixelFormats.Bgra32, null, 0);
             }
             this.editBit = new WriteableBitmap(this.baseBit);
@@ -392,11 +394,12 @@ namespace palette.duel
                 for (int y = 0; y < this.baseBit.Height; y++)
                 {
                     int j = (y * (int)this.baseBit.PixelWidth + x) * 4;
-                    if (this.allPixels[j + 3] == 255)
+                    if (this.allPixels[j + 3] > 0)
                     {
                         this.pixpoints.Add(
                             new Pixpoint(x, y, 
-                            Color.FromRgb(
+                            Color.FromArgb(
+                                this.allPixels[j+3],
                                 this.allPixels[j+2], 
                                 this.allPixels[j+1], 
                                 this.allPixels[j]))
@@ -407,11 +410,28 @@ namespace palette.duel
 
             using (FileStream stream = File.OpenRead(outfit.palette))
             {
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.StreamSource = stream; bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                this.basePaletteKeys = new BitmapPalette(bitmap, 100);
+                BitmapImage imageMap = new BitmapImage();
+                imageMap.BeginInit();
+                imageMap.StreamSource = stream; imageMap.CacheOption = BitmapCacheOption.OnLoad;
+                imageMap.EndInit();
+
+                BitmapPalette basePalette = new BitmapPalette(imageMap, 100);
+
+                FormatConvertedBitmap bitmap = new FormatConvertedBitmap(imageMap, PixelFormats.Bgra32, null, 0);
+                
+                int s = (100 * bitmap.Format.BitsPerPixel + 7) / 8;
+                byte[] pixels = new byte[s];
+                bitmap.CopyPixels(pixels, s, 0);
+
+                for (int i = 0; i < bitmap.PixelWidth; i++)
+                {
+                    int j = i * 4;
+                    Color color = Color.FromArgb(pixels[j + 3], pixels[j + 2], pixels[j + 1], pixels[j]);
+                    if (color.A > 0)
+                    {
+                        this.baseColors.Add(color);
+                    }
+                }
             }
             using (FileStream stream = File.OpenRead(outfit.normal))
             {
@@ -427,7 +447,7 @@ namespace palette.duel
                 byte[] pixels = new byte[s];
                 bitmap.CopyPixels(pixels, s, 0);
 
-                for (int i = 0; i < this.basePaletteKeys.Colors.Count; i++)
+                for (int i = 0; i < this.baseColors.Count; i++)
                 {
                     int j = i * 4;
                     Color color = Color.FromArgb(pixels[j + 3], pixels[j + 2], pixels[j + 1], pixels[j]);
@@ -435,7 +455,7 @@ namespace palette.duel
                 }
             }
 
-            foreach (Color c in this.basePaletteKeys.Colors)
+            foreach (Color c in this.baseColors)
             {
                 if (!(c.R == 205 && c.G == 205 && c.B == 205))
                 {
@@ -457,6 +477,7 @@ namespace palette.duel
             this.window.paletteGrid.Children.Add(button);
             Grid.SetRow(button, y);
             Grid.SetColumn(button, x);
+            button.CreateImageBack();
             this.paletteButtons.Add(button);
 
             return button;
@@ -475,9 +496,9 @@ namespace palette.duel
                     }
                     break;
                 case "Default":
-                    for (int i = 0; i < this.basePaletteKeys.Colors.Count; i++)
+                    for (int i = 0; i < this.baseColors.Count; i++)
                     {
-                        Color bColor = this.basePaletteKeys.Colors[i];
+                        Color bColor = this.baseColors[i];
                         Color dColor = this.defaultColors[i];
 
                         if (this.paletteMatch.ContainsKey(bColor))
@@ -836,9 +857,9 @@ namespace palette.duel
                 );
             // BGRA
 
-            for (int i = 0; i < this.basePaletteKeys.Colors.Count; i++)
+            for (int i = 0; i < this.baseColors.Count; i++)
             {
-                Color key = this.basePaletteKeys.Colors[i];
+                Color key = this.baseColors[i];
                 int j = i * 4;
 
                 if (this.paletteMatch.ContainsKey(key) && this.exportPixels.Length > j)
@@ -900,22 +921,24 @@ namespace palette.duel
         public Color key;
         public Color value;
 
+        public Image back;
+
         public int size = 24;
         public PaletteButton(MainWindow window, PaletteEditor menu, Color key)
         {
             this.menu = menu;
             this.key = key;
-            this.value = key;
             this.Style = (Style)this.menu.window.Resources["NoBGChange"];
 
             this.RenderSize = new Size(this.size, this.size);
             this.Width = this.size; this.Height = this.size;
             this.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-            this.Background = new SolidColorBrush(value);
-
             this.TabIndex = menu.paletteButtons.Count;
             this.BorderThickness = new Thickness(2);
 
+            this.back = new Image();
+
+            this.Set(key);
             this.CreateContext();
             this.Click += this.PaletteFocus;
         }
@@ -950,7 +973,23 @@ namespace palette.duel
 
             this.ContextMenu = context;
         }
+        public void CreateImageBack()
+        {
+            using (FileStream stream = File.OpenRead(Data.PATH.A + "icons\\paletteBack.png"))
+            {
+                BitmapImage imageMap = new BitmapImage();
+                imageMap.BeginInit();
+                imageMap.StreamSource = stream; imageMap.CacheOption = BitmapCacheOption.OnLoad;
+                imageMap.EndInit();
 
+                this.back.Source = imageMap;
+            }
+            this.back.Width = this.size; this.back.Height = this.size;
+            this.menu.window.paletteGrid.Children.Add(this.back);
+            Grid.SetRow(this.back, Grid.GetRow(this));
+            Grid.SetColumn(this.back, Grid.GetColumn(this));
+            Grid.SetZIndex(this.back, Grid.GetZIndex(this) - 1);
+        }
         public void PaletteFocus(object? sender, EventArgs? e)
         {
             if (menu.selectedPaletteBtn == this)
