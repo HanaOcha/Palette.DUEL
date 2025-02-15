@@ -56,13 +56,13 @@ namespace palette.duel
             {
                 this.scrollVertical.Visibility = Visibility.Visible;
                 this.scrollVertical.IsEnabled = true;
-                this.scrollVertical.Maximum = bitmap.PixelHeight - (int)this.Height;
+                this.scrollVertical.Maximum = bitmap.PixelHeight - (int)this.Height / 2;
             }
             if (bitmap.PixelWidth > this.Width)
             {
                 this.scrollHorizontal.Visibility = Visibility.Visible;
                 this.scrollHorizontal.IsEnabled = true;
-                this.scrollHorizontal.Maximum = bitmap.PixelWidth - (int)this.Width;
+                this.scrollHorizontal.Maximum = bitmap.PixelWidth - (int)this.Width / 2;
             }
             this.Scroll(null, null);
         }
