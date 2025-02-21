@@ -361,6 +361,7 @@ namespace palette.duel
             this.paletteButtons.Clear();
             this.pixpoints.Clear();
             this.paletteMatch.Clear();
+            this.baseColors.Clear();
             this.defaultColors.Clear();
 
             this.SetupPixels();
@@ -422,7 +423,6 @@ namespace palette.duel
                 imageMap.EndInit();
 
                 BitmapPalette basePalette = new BitmapPalette(imageMap, 100);
-
                 FormatConvertedBitmap bitmap = new FormatConvertedBitmap(imageMap, PixelFormats.Bgra32, null, 0);
                 
                 int s = (100 * bitmap.Format.BitsPerPixel + 7) / 8;

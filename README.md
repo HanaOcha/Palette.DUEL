@@ -40,5 +40,5 @@ Ctrl+S    Export
 
 ### Known Bugs
 - Issue where a picture imported via Reference may not have its colors picked accurately
-  - Copying or downloading the image from anywhere else may fix it
+  - Uploading and redownloading the image to/from Imgur is known to fix it
 - Glow colors are not 1 to 1 on the sprite sheets and do not display accurately in the editor
