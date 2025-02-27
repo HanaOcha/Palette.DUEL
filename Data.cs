@@ -164,7 +164,7 @@ namespace palette.duel
                 return;
             }
 
-            if (window.characterSelectCanvas.Visibility == Visibility.Visible)
+            if (window.characterSelectCanvas.Visibility == Visibility.Visible && window.characterSelectCanvas.IsEnabled)
             {
                 if (key == Key.OemComma)
                 {
@@ -177,7 +177,7 @@ namespace palette.duel
                     return;
                 }
             }
-            else if (window.paletteEditCanvas.Visibility == Visibility.Visible)
+            else if (window.paletteEditCanvas.Visibility == Visibility.Visible && window.paletteEditCanvas.IsEnabled)
             {
                 switch (key)
                 {

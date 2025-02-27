@@ -237,13 +237,17 @@
                 Height="35" Width="120" FontSize="16" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
                 BorderBrush="White" BorderThickness="3,3,3,3" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
-            <Button x:Name="resetPaletteEditor" Canvas.Left="901" Width="30" Height="30"
-                Canvas.Top="16" HorizontalAlignment="Left" VerticalAlignment="Top" 
+            <Button x:Name="resetPaletteEditor" Canvas.Left="825" Width="32" Height="33"
+                Canvas.Top="15" HorizontalAlignment="Left" VerticalAlignment="Top" 
                                  BorderBrush="#00000000" Style="{DynamicResource NoBGChange}">
                 <Button.Background>
                     <ImageBrush ImageSource="assets/icons/reset.png"/>
                 </Button.Background>
             </Button>
+
+            <local:DuelistButton x:Name="returnToCharSelect" Style="{DynamicResource NoBGChange}"  Content="New" Canvas.Left="869" Canvas.Top="16" 
+                Height="28" Width="60" FontSize="16" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
+                BorderBrush="White" BorderThickness="3,3,3,3" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
             <Canvas>
                 <TextBox x:Name="animationFPS" Canvas.Left="426" TextWrapping="Wrap" Text="60" Canvas.Top="46" Width="30" Height="24" MaxLength="2" MaxLines="1"
@@ -255,6 +259,23 @@
 
         </Canvas>
 
+        <Canvas x:Name="ResetWarningCanvas" IsEnabled="False" Visibility="Visible">
+            <Rectangle Height="524" Width="960" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Center" VerticalAlignment="Top" Fill="#59000000"></Rectangle>
+            <Rectangle Height="200" Width="366" Canvas.Left="297" Canvas.Top="162" HorizontalAlignment="Center" VerticalAlignment="Center" Fill="White"></Rectangle>
+            <Rectangle Height="180" Width="346" Canvas.Left="307" Canvas.Top="172" HorizontalAlignment="Center" VerticalAlignment="Center" Fill="Black"></Rectangle>
+            <TextBlock x:Name="WarningResetText" Canvas.Left="313" Canvas.Top="189" TextWrapping="Wrap" Text="Reset?" TextAlignment="Center"
+                FontSize="32" FontFamily="Arial Black" Foreground="White" RenderTransformOrigin="0,0" Width="334" Height="52" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Canvas.Left="342" Canvas.Top="234" TextWrapping="Wrap" Text="you will lose all unsaved progress." TextAlignment="Center"
+                FontSize="20" FontFamily="Arial Black" Foreground="White" RenderTransformOrigin="0,0" Width="276" Height="85" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+            <local:DuelistButton x:Name="WarningContinue" Style="{DynamicResource NoBGChange}"  Content="satisfaction" Canvas.Left="360" Canvas.Top="301" 
+                Height="32" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"
+                FontSize="14.5" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
+                BorderBrush="White" BorderThickness="3,3,3,3" />
+            <local:DuelistButton x:Name="WarningCancel" Style="{DynamicResource NoBGChange}"  Content="cancel" Canvas.Left="496" Canvas.Top="301" 
+                Height="32" Width="90" FontSize="14.5" FontFamily="Arial Black" Background="#00000000" Foreground="White" 
+                BorderBrush="White" BorderThickness="3,3,3,3" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        </Canvas>
     </Canvas>
 
     <Window.Resources>

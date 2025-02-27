@@ -19,6 +19,7 @@ namespace palette.duel
         public required CharacterSelect charSelect;
         public required PaletteEditor paletteEditor;
         public required PaletteHover paletteHover;
+        public required WarningPopup warningPopup;
 
         public DispatcherTimer watch;
         public MainWindow()
@@ -30,6 +31,7 @@ namespace palette.duel
             Data.ReadCharacters();
 
             this.CharacterSelectUI();
+            this.WarningPopupUI();
             this.PaletteEditorUI();
             this.PaletteHoverSetup();
 
@@ -49,6 +51,15 @@ namespace palette.duel
             this.selectOutfitForward.Click += charSelect.OutfitForward;
             this.finalizePaint.Click += charSelect.FinalizePaint;
             charSelect.Show();
+        }
+        public void WarningPopupUI()
+        {
+            this.warningPopup = new WarningPopup(this);
+            this.WarningCancel.Click += warningPopup.Cancel;
+            this.WarningContinue.Click += warningPopup.Cancel;
+
+            this.ResetWarningCanvas.Visibility = Visibility.Hidden;
+            this.ResetWarningCanvas.IsEnabled = false;
         }
         public void PaletteEditorUI()
         {
@@ -75,7 +86,9 @@ namespace palette.duel
             this.paletteColorSlider.ColorChanged += this.paletteEditor.ColorWithSlider;
             this.paletteColorHex.ColorChanged += this.paletteEditor.ColorWithHex;
             this.focusOpacity.ValueChanged += this.paletteEditor.UpdateDictionary;
-            this.resetPaletteEditor.Click += this.paletteEditor.Reset;
+
+            this.resetPaletteEditor.Click += this.warningPopup.Reset;
+            this.returnToCharSelect.Click += this.warningPopup.New;
 
             for (int i = 0; i < 25; i++)
             {
@@ -306,7 +319,7 @@ namespace palette.duel
         public Character character;
         public Outfit outfit;
         public Vector2 frame = new Vector2();
-        public int animFPS = 14;
+        public int animFPS = 15;
 
         public BitmapSource? baseBit;
         //public BitmapPalette? basePaletteKeys;
@@ -358,11 +371,17 @@ namespace palette.duel
         }
         public void Reset(object? s = null, EventArgs? e = null)
         {
-            this.paletteButtons.Clear();
             this.pixpoints.Clear();
             this.paletteMatch.Clear();
             this.baseColors.Clear();
             this.defaultColors.Clear();
+
+            foreach (PaletteButton button in paletteButtons)
+            {
+                this.window.paletteGrid.Children.Remove(button.back);
+                this.window.paletteGrid.Children.Remove(button);
+            }
+            this.paletteButtons.Clear();
 
             this.SetupPixels();
             this.window.chrPaletteDisplay.Source = this.editBit;
@@ -377,6 +396,8 @@ namespace palette.duel
             this.animFPS = 15;
             this.window.watch.Interval = new TimeSpan(0, 0, 0, 0, (int)(1000f / (float)this.animFPS));
             this.window.animationFPS.Text = this.animFPS.ToString();
+
+            this.window.paletteAnimate.IsChecked = false;
         }
         public void SetupPixels()
         {
@@ -529,7 +550,7 @@ namespace palette.duel
                     Color color = this.paletteMatch[key];
                     if (this.selectedPaletteBtn.key != key)
                     {
-                        color.A = (byte)(int)(this.window.focusOpacity.Value * 255f / 100f);
+                        color.A = (byte)(int)(color.A * this.window.focusOpacity.Value / 100f);
                     }
                     this.paletteMatch[key] = color;
                 }
@@ -938,6 +959,18 @@ namespace palette.duel
                 this.window.Closed += new EventHandler((x, y) => dropper.Close());
             }
         }
+        public void ReturnToCharacterSelect(object? s, EventArgs? e)
+        {
+            this.Reset();
+            this.Hide();
+
+            foreach (Window window in this.window.OwnedWindows)
+            {
+                window.Close();
+            }
+
+            this.window.charSelect.Show();
+        }
     }
     public class PaletteButton : Button
     {
@@ -1087,6 +1120,44 @@ namespace palette.duel
                     }
                 }
             }
+        }
+    }
+
+    public class WarningPopup
+    {
+        public MainWindow window;
+        public WarningPopup(MainWindow window)
+        {
+            this.window = window;
+        }
+        public void Reset(object? s, EventArgs? e)
+        {
+            this.Popup();
+
+            this.window.WarningContinue.Click += this.window.paletteEditor.Reset;
+            this.window.WarningResetText.Text = "Reset?";
+        }
+        public void New(object? s, EventArgs? e)
+        {
+            this.Popup();
+
+            this.window.WarningResetText.Text = "New Palette?";
+            this.window.WarningContinue.Click += this.window.paletteEditor.ReturnToCharacterSelect;
+        }
+        public void Popup()
+        {
+            this.window.WarningContinue.Click -= this.window.paletteEditor.Reset;
+            this.window.WarningContinue.Click -= this.window.paletteEditor.ReturnToCharacterSelect;
+
+            this.window.ResetWarningCanvas.Visibility = Visibility.Visible;
+            this.window.ResetWarningCanvas.IsEnabled = true;
+            this.window.paletteEditCanvas.IsEnabled = false;
+        }
+        public void Cancel(object? s, EventArgs? e)
+        {
+            this.window.ResetWarningCanvas.Visibility = Visibility.Hidden;
+            this.window.ResetWarningCanvas.IsEnabled = false;
+            this.window.paletteEditCanvas.IsEnabled = true;
         }
     }
 }
